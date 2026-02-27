@@ -1,0 +1,77 @@
+# ──────────────────────────────────────────────
+# Indus Feedback Collector — Configuration
+# ──────────────────────────────────────────────
+# Copy this file to config.yaml and fill in your credentials:
+#   cp config.example.yaml config.yaml
+# ──────────────────────────────────────────────
+
+twitter:
+  username: "YOUR_X_USERNAME"
+  email: "YOUR_EMAIL"
+  password: "YOUR_PASSWORD"
+  cookies_file: "data/cookies.json"
+
+search:
+  # Each query uses exact-phrase matching to avoid noise.
+  queries:
+    - '"indus" "sarvam"'
+    - '"indus by sarvam"'
+    - '"sarvam ai" indus'
+    - '"indus app" sarvam'
+    - '@SarvamAI indus'
+
+  # A tweet MUST contain at least one of these to be kept (post-filter).
+  relevance_signals:
+    - "sarvam"
+    - "SarvamAI"
+    - "@SarvamAI"
+    - "indus app"
+    - "indus by"
+    - "#IndusApp"
+    - "pratyush"
+    - "pratykumar"
+
+  # Tweets containing ANY of these are dropped
+  exclude_terms:
+    - "IndusInd"
+    - "indusind"
+    - "Indus Petrochem"
+    - "Indus Fila"
+    - "Indus Valley"
+    - "Indus civilization"
+    - "Indus river"
+    - "Indus Water"
+    - "indus tower"
+    - "IndUS BioTech"
+    - "IndiGo"
+    - "indigo"
+    - "lenskart"
+    - "Lenskart"
+
+  max_results_per_query: 20
+
+monitor:
+  sarvam_handle: "SarvamAI"
+
+  # Specific Indus threads to track — add any tweet URL about Indus here
+  indus_threads:
+    - url: "https://x.com/pratykumar/status/2024889207324639450"
+      handle: "pratykumar"
+      tweet_id: "2024889207324639450"
+      label: "Pratyush Kumar's Indus thread"
+    - url: "https://x.com/SarvamAI/status/2026557756598276501"
+      handle: "SarvamAI"
+      tweet_id: "2026557756598276501"
+      label: "Indus response & adoption thread"
+
+notification:
+  email:
+    enabled: false
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+    sender_email: "YOUR_EMAIL@gmail.com"
+    sender_password: "YOUR_APP_PASSWORD"
+    recipient_email: "YOUR_EMAIL@gmail.com"
+  csv:
+    enabled: true
+    path: "data/feedback_latest.csv"
