@@ -8,7 +8,12 @@ import streamlit as st
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from db import init_db, query_tweets
-from collector import collect_feedback
+
+try:
+    from collector import collect_feedback
+    _CAN_FETCH = True
+except Exception:
+    _CAN_FETCH = False
 
 st.set_page_config(
     page_title="Indus Feedback Dashboard",
@@ -146,27 +151,32 @@ def _dashboard():
         st.divider()
 
         st.markdown("### Fetch New Data")
-        st.caption("Scrape fresh replies from X for this range")
 
-        if st.button("Fetch from X", use_container_width=True, type="primary"):
-            with st.spinner("Scraping replies from X… this takes ~2 min"):
-                _run_fetch(since_dt)
-            st.rerun()
+        if _CAN_FETCH:
+            st.caption("Scrape fresh replies from X for this range")
 
-        if st.session_state.get("fetch_error"):
-            st.error(st.session_state["fetch_error"])
-        elif st.session_state.get("fetch_result_count") is not None:
-            n = st.session_state["fetch_result_count"]
-            if n > 0:
-                st.success(f"Fetched {n} new replies!")
-            else:
-                st.info("No new replies (all already in DB)")
-            st.session_state["fetch_result_count"] = None
+            if st.button("Fetch from X", use_container_width=True, type="primary"):
+                with st.spinner("Scraping replies from X… this takes ~2 min"):
+                    _run_fetch(since_dt)
+                st.rerun()
 
-        if st.session_state.get("fetch_log"):
-            with st.expander("Fetch log", expanded=False):
-                for line in st.session_state["fetch_log"]:
-                    st.text(line)
+            if st.session_state.get("fetch_error"):
+                st.error(st.session_state["fetch_error"])
+            elif st.session_state.get("fetch_result_count") is not None:
+                n = st.session_state["fetch_result_count"]
+                if n > 0:
+                    st.success(f"Fetched {n} new replies!")
+                else:
+                    st.info("No new replies (all already in DB)")
+                st.session_state["fetch_result_count"] = None
+
+            if st.session_state.get("fetch_log"):
+                with st.expander("Fetch log", expanded=False):
+                    for line in st.session_state["fetch_log"]:
+                        st.text(line)
+        else:
+            st.caption("Fetching is only available when running locally.")
+            st.button("Fetch from X", use_container_width=True, disabled=True)
 
     # ── query DB for the selected window
     tweets = query_tweets(
